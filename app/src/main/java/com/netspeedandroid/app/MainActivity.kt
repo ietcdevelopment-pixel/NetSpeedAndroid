@@ -262,6 +262,6 @@ class MainActivity : Activity() {
 
     companion object {
         private const val HISTORY_PREFERENCES = "speed_test_history"
-        private const val HISTORY_KEY = "successful_tests"
+        private const val HISTORY_KEY = "successful_tests_v2"
     }
 }

@@ -18,12 +18,12 @@ jobs:
           distribution: temurin
           java-version: "17"
       - uses: gradle/actions/setup-gradle@v6
-      - name: Build debug APK
-        run: ./gradlew clean assembleDebug testDebugUnitTest --stacktrace
+      - name: Build and verify debug APK
+        run: ./gradlew clean testDebugUnitTest lintDebug assembleDebug --stacktrace
       - name: Name APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk NetSpeedAndroid-v1.5.apk
+        run: cp app/build/outputs/apk/debug/app-debug.apk NetSpeedAndroid-v1.6.apk
       - uses: actions/upload-artifact@v7
         with:
-          name: NetSpeedAndroid-v1.5
-          path: NetSpeedAndroid-v1.5.apk
+          name: NetSpeedAndroid-v1.6
+          path: NetSpeedAndroid-v1.6.apk
           if-no-files-found: error

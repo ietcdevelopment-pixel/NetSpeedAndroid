@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Net Speed Test</string>
+    <string name="screen_title">Network Speed Test</string>
+    <string name="screen_subtitle">Cloudflare-powered connection check</string>
+    <string name="ping_label">Ping</string>
+    <string name="download_label">Download</string>
+    <string name="upload_label">Upload</string>
+    <string name="not_measured">--</string>
+    <string name="ready">Ready to test your connection</string>
+    <string name="start_test">START SPEED TEST</string>
+    <string name="test_again">TEST AGAIN</string>
+    <string name="testing">TESTING…</string>
+    <string name="testing_ping">Testing ping…</string>
+    <string name="testing_download">Testing download…</string>
+    <string name="testing_upload">Testing upload…</string>
+    <string name="test_complete">Test complete</string>
+    <string name="test_failed">%1$s failed: %2$s</string>
+    <string name="network_error">Network error</string>
+    <string name="no_network_error">No active network connection</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="mobile_data">Mobile Data</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="vpn">VPN</string>
+    <string name="other_network">Other Network</string>
+    <string name="no_network">No Network</string>
+    <string name="ping_format">%.0f ms</string>
+    <string name="speed_format">%.1f Mbps</string>
+</resources>

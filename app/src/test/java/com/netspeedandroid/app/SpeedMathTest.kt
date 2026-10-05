@@ -42,7 +42,7 @@ class SpeedMathTest {
 
     @Test
     fun stagedTransfersKeepTrafficCaps() {
-        assertEquals(SpeedTestClient.DOWNLOAD_BYTES, SpeedTestClient.DOWNLOAD_STAGES.sum())
-        assertEquals(SpeedTestClient.UPLOAD_BYTES, SpeedTestClient.UPLOAD_STAGES.sum())
+        assertEquals(WebViewSpeedTestClient.DOWNLOAD_BYTES, WebViewSpeedTestClient.DOWNLOAD_STAGES.sum())
+        assertEquals(WebViewSpeedTestClient.UPLOAD_BYTES, WebViewSpeedTestClient.UPLOAD_STAGES.sum())
     }
 }

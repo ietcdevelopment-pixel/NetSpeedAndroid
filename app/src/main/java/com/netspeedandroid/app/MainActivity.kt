@@ -7,6 +7,7 @@ import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.View
 import android.webkit.WebSettings
+import android.webkit.WebView
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -25,6 +26,7 @@ class MainActivity : Activity() {
     private lateinit var startButton: Button
     private lateinit var versionValue: TextView
     private lateinit var browserUserAgent: String
+    private lateinit var transferClient: WebViewSpeedTestClient
 
     private val executor: ExecutorService = Executors.newSingleThreadExecutor()
     private var activeTest: Future<*>? = null
@@ -47,6 +49,7 @@ class MainActivity : Activity() {
             packageManager.getPackageInfo(packageName, 0).versionName,
         )
         browserUserAgent = WebSettings.getDefaultUserAgent(this)
+        transferClient = WebViewSpeedTestClient(findViewById<WebView>(R.id.speed_web_view))
 
         startButton.setOnClickListener { startSpeedTest() }
         updateNetworkType()
@@ -72,11 +75,11 @@ class MainActivity : Activity() {
         progress.progress = 0
 
         activeTest = executor.submit {
-            val client = SpeedTestClient(browserUserAgent)
+            val pingClient = SpeedTestClient(browserUserAgent)
             var stage = getString(R.string.testing_ping)
             try {
                 postStatus(stage, 0)
-                val ping = client.measurePingMs()
+                val ping = pingClient.measurePingMs()
                 postUi {
                     pingValue.text = getString(R.string.ping_format, ping)
                     progress.progress = 10
@@ -84,7 +87,7 @@ class MainActivity : Activity() {
 
                 stage = getString(R.string.testing_download)
                 postStatus(stage, 10)
-                val download = client.measureDownloadMbps { done, total, current ->
+                val download = transferClient.measureDownloadMbps { done, total, current ->
                     postUi {
                         statusValue.text = getString(
                             R.string.download_progress,
@@ -102,7 +105,7 @@ class MainActivity : Activity() {
 
                 stage = getString(R.string.testing_upload)
                 postStatus(stage, 75)
-                val upload = client.measureUploadMbps { done, total, current ->
+                val upload = transferClient.measureUploadMbps { done, total, current ->
                     postUi {
                         statusValue.text = getString(
                             R.string.upload_progress,
@@ -175,6 +178,7 @@ class MainActivity : Activity() {
         destroyed = true
         activeTest?.cancel(true)
         executor.shutdownNow()
+        transferClient.destroy()
         super.onDestroy()
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -181,5 +182,14 @@
             android:layout_marginTop="18dp"
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
+
+        <WebView
+            android:id="@+id/speed_web_view"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:alpha="0"
+            android:focusable="false"
+            android:importantForAccessibility="no"
+            tools:ignore="WebViewLayout" />
     </LinearLayout>
 </ScrollView>

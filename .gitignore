@@ -9,3 +9,4 @@ captures/
 .externalNativeBuild/
 .cxx/
 NetSpeedAndroid.apk
+NetSpeedAndroid-v*.apk

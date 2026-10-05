@@ -20,8 +20,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
       - name: Build debug APK
         run: ./gradlew clean assembleDebug testDebugUnitTest --stacktrace
+      - name: Name APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk NetSpeedAndroid-v1.2.apk
       - uses: actions/upload-artifact@v7
         with:
-          name: NetSpeedAndroid-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: NetSpeedAndroid-v1.2
+          path: NetSpeedAndroid-v1.2.apk
           if-no-files-found: error

@@ -6,6 +6,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.View
+import android.webkit.WebSettings
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -23,6 +24,7 @@ class MainActivity : Activity() {
     private lateinit var progress: ProgressBar
     private lateinit var startButton: Button
     private lateinit var versionValue: TextView
+    private lateinit var browserUserAgent: String
 
     private val executor: ExecutorService = Executors.newSingleThreadExecutor()
     private var activeTest: Future<*>? = null
@@ -44,6 +46,7 @@ class MainActivity : Activity() {
             R.string.version_format,
             packageManager.getPackageInfo(packageName, 0).versionName,
         )
+        browserUserAgent = WebSettings.getDefaultUserAgent(this)
 
         startButton.setOnClickListener { startSpeedTest() }
         updateNetworkType()
@@ -69,7 +72,7 @@ class MainActivity : Activity() {
         progress.progress = 0
 
         activeTest = executor.submit {
-            val client = SpeedTestClient()
+            val client = SpeedTestClient(browserUserAgent)
             var stage = getString(R.string.testing_ping)
             try {
                 postStatus(stage, 0)

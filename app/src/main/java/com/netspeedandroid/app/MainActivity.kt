@@ -12,6 +12,8 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import java.io.IOException
+import java.text.DateFormat
+import java.util.Date
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -24,6 +26,7 @@ class MainActivity : Activity() {
     private lateinit var statusValue: TextView
     private lateinit var progress: ProgressBar
     private lateinit var startButton: Button
+    private lateinit var historyValue: TextView
     private lateinit var versionValue: TextView
     private lateinit var browserUserAgent: String
     private lateinit var transferClient: WebViewSpeedTestClient
@@ -43,6 +46,7 @@ class MainActivity : Activity() {
         statusValue = findViewById(R.id.status_value)
         progress = findViewById(R.id.progress)
         startButton = findViewById(R.id.start_button)
+        historyValue = findViewById(R.id.history_value)
         versionValue = findViewById(R.id.version_value)
         versionValue.text = getString(
             R.string.version_format,
@@ -52,6 +56,7 @@ class MainActivity : Activity() {
         transferClient = WebViewSpeedTestClient(findViewById<WebView>(R.id.speed_web_view))
 
         startButton.setOnClickListener { startSpeedTest() }
+        renderHistory(loadHistory())
         updateNetworkType()
     }
 
@@ -120,6 +125,7 @@ class MainActivity : Activity() {
                     uploadValue.text = getString(R.string.speed_format, upload)
                     progress.progress = 100
                     statusValue.text = getString(R.string.test_complete)
+                    saveHistory(TestHistoryEntry(System.currentTimeMillis(), network, ping, download, upload))
                     setTesting(false)
                 }
             } catch (_: InterruptedException) {
@@ -154,6 +160,37 @@ class MainActivity : Activity() {
         networkValue.text = currentNetworkType()
     }
 
+    private fun loadHistory(): List<TestHistoryEntry> = TestHistory.decode(
+        getSharedPreferences(HISTORY_PREFERENCES, MODE_PRIVATE)
+            .getString(HISTORY_KEY, "").orEmpty(),
+    )
+
+    private fun saveHistory(entry: TestHistoryEntry) {
+        val entries = TestHistory.add(loadHistory(), entry)
+        getSharedPreferences(HISTORY_PREFERENCES, MODE_PRIVATE).edit()
+            .putString(HISTORY_KEY, TestHistory.encode(entries))
+            .apply()
+        renderHistory(entries)
+    }
+
+    private fun renderHistory(entries: List<TestHistoryEntry>) {
+        val dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
+        historyValue.text = if (entries.isEmpty()) {
+            getString(R.string.history_empty)
+        } else {
+            entries.joinToString("\n\n") { entry ->
+                getString(
+                    R.string.history_entry,
+                    dateFormat.format(Date(entry.timestampMillis)),
+                    entry.network,
+                    entry.pingMs,
+                    entry.downloadMbps,
+                    entry.uploadMbps,
+                )
+            }
+        }
+    }
+
     private fun currentNetworkType(): String {
         val manager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = manager.activeNetwork ?: return getString(R.string.no_network)
@@ -180,5 +217,10 @@ class MainActivity : Activity() {
         executor.shutdownNow()
         transferClient.destroy()
         super.onDestroy()
+    }
+
+    companion object {
+        private const val HISTORY_PREFERENCES = "speed_test_history"
+        private const val HISTORY_KEY = "successful_tests"
     }
 }

@@ -176,10 +176,30 @@
             android:textStyle="bold" />
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/history_title"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/history_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/metric_card"
+            android:padding="16dp"
+            android:text="@string/history_empty"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp" />
+
+        <TextView
             android:id="@+id/version_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="24dp"
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 

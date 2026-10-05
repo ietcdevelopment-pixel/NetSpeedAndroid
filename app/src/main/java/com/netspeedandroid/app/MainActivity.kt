@@ -70,23 +70,43 @@ class MainActivity : Activity() {
                 val ping = client.measurePingMs()
                 postUi {
                     pingValue.text = getString(R.string.ping_format, ping)
-                    progress.progress = 1
+                    progress.progress = 10
                 }
 
                 stage = getString(R.string.testing_download)
-                postStatus(stage, 1)
-                val download = client.measureDownloadMbps()
+                postStatus(stage, 10)
+                val download = client.measureDownloadMbps { done, total, current ->
+                    postUi {
+                        statusValue.text = getString(
+                            R.string.download_progress,
+                            done / 1_000_000,
+                            total / 1_000_000,
+                            current,
+                        )
+                        progress.progress = 10 + (done * 65 / total).toInt()
+                    }
+                }
                 postUi {
                     downloadValue.text = getString(R.string.speed_format, download)
-                    progress.progress = 2
+                    progress.progress = 75
                 }
 
                 stage = getString(R.string.testing_upload)
-                postStatus(stage, 2)
-                val upload = client.measureUploadMbps()
+                postStatus(stage, 75)
+                val upload = client.measureUploadMbps { done, total, current ->
+                    postUi {
+                        statusValue.text = getString(
+                            R.string.upload_progress,
+                            done / 1_000_000,
+                            total / 1_000_000,
+                            current,
+                        )
+                        progress.progress = 75 + (done * 25 / total).toInt()
+                    }
+                }
                 postUi {
                     uploadValue.text = getString(R.string.speed_format, upload)
-                    progress.progress = 3
+                    progress.progress = 100
                     statusValue.text = getString(R.string.test_complete)
                     setTesting(false)
                 }
@@ -105,10 +125,10 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun postStatus(status: String, completedSteps: Int) {
+    private fun postStatus(status: String, progressValue: Int) {
         postUi {
             statusValue.text = status
-            progress.progress = completedSteps
+            progress.progress = progressValue
         }
     }
 

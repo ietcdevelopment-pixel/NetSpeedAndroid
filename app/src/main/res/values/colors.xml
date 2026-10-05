@@ -7,4 +7,9 @@
     <color name="text_secondary">#64748B</color>
     <color name="accent">#2563EB</color>
     <color name="accent_soft">#DBEAFE</color>
+    <color name="divider">#D7E0EC</color>
+    <color name="success">#0F9F79</color>
+    <color name="error">#C62828</color>
+    <color name="wave">#2563EB</color>
+    <color name="wave_dot">#0EA5E9</color>
 </resources>

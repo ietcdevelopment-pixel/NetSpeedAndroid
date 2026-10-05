@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="page_background">#07111F</color>
+    <color name="surface">#0C1A2C</color>
+    <color name="card_border">#1D3655</color>
+    <color name="text_primary">#F8FAFC</color>
+    <color name="text_secondary">#9FB0CC</color>
+    <color name="accent">#2878FF</color>
+    <color name="accent_soft">#102D57</color>
+    <color name="divider">#203650</color>
+    <color name="success">#43E6BD</color>
+    <color name="error">#FF8A9A</color>
+    <color name="wave">#4B91FF</color>
+    <color name="wave_dot">#FFFFFF</color>
+</resources>

@@ -9,6 +9,7 @@ import android.view.View
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import java.io.IOException
@@ -20,13 +21,18 @@ import java.util.concurrent.Future
 
 class MainActivity : Activity() {
     private lateinit var networkValue: TextView
+    private lateinit var heroLabel: TextView
+    private lateinit var heroValue: TextView
+    private lateinit var heroUnit: TextView
     private lateinit var pingValue: TextView
     private lateinit var downloadValue: TextView
     private lateinit var uploadValue: TextView
     private lateinit var statusValue: TextView
     private lateinit var progress: ProgressBar
+    private lateinit var speedWave: SpeedWaveView
     private lateinit var startButton: Button
-    private lateinit var historyValue: TextView
+    private lateinit var historyEmpty: TextView
+    private lateinit var historyContainer: LinearLayout
     private lateinit var versionValue: TextView
     private lateinit var browserUserAgent: String
     private lateinit var transferClient: WebViewSpeedTestClient
@@ -40,13 +46,18 @@ class MainActivity : Activity() {
         setContentView(R.layout.activity_main)
 
         networkValue = findViewById(R.id.network_value)
+        heroLabel = findViewById(R.id.hero_label)
+        heroValue = findViewById(R.id.hero_value)
+        heroUnit = findViewById(R.id.hero_unit)
         pingValue = findViewById(R.id.ping_value)
         downloadValue = findViewById(R.id.download_value)
         uploadValue = findViewById(R.id.upload_value)
         statusValue = findViewById(R.id.status_value)
         progress = findViewById(R.id.progress)
+        speedWave = findViewById(R.id.speed_wave)
         startButton = findViewById(R.id.start_button)
-        historyValue = findViewById(R.id.history_value)
+        historyEmpty = findViewById(R.id.history_empty)
+        historyContainer = findViewById(R.id.history_container)
         versionValue = findViewById(R.id.version_value)
         versionValue.text = getString(
             R.string.version_format,
@@ -70,6 +81,7 @@ class MainActivity : Activity() {
         networkValue.text = network
         if (network == getString(R.string.no_network)) {
             statusValue.text = getString(R.string.no_network_error)
+            statusValue.setTextColor(getColor(R.color.error))
             return
         }
 
@@ -77,6 +89,9 @@ class MainActivity : Activity() {
         pingValue.text = getString(R.string.not_measured)
         downloadValue.text = getString(R.string.not_measured)
         uploadValue.text = getString(R.string.not_measured)
+        heroLabel.text = getString(R.string.ping_label)
+        heroValue.text = getString(R.string.not_measured)
+        heroUnit.text = ""
         progress.progress = 0
 
         activeTest = executor.submit {
@@ -87,13 +102,20 @@ class MainActivity : Activity() {
                 val ping = pingClient.measurePingMs()
                 postUi {
                     pingValue.text = getString(R.string.ping_format, ping)
+                    setHeroValue(getString(R.string.number_no_decimals, ping), R.string.ms_unit)
                     progress.progress = 10
                 }
 
                 stage = getString(R.string.testing_download)
                 postStatus(stage, 10)
+                postUi {
+                    heroLabel.text = getString(R.string.download_label)
+                    heroValue.text = getString(R.string.not_measured)
+                    heroUnit.text = ""
+                }
                 val download = transferClient.measureDownloadMbps { done, total, current ->
                     postUi {
+                        setHeroValue(getString(R.string.number_one_decimal, current), R.string.mbps_unit)
                         statusValue.text = getString(
                             R.string.download_progress,
                             done / 1_000_000,
@@ -110,8 +132,14 @@ class MainActivity : Activity() {
 
                 stage = getString(R.string.testing_upload)
                 postStatus(stage, 75)
+                postUi {
+                    heroLabel.text = getString(R.string.upload_label)
+                    heroValue.text = getString(R.string.not_measured)
+                    heroUnit.text = ""
+                }
                 val upload = transferClient.measureUploadMbps { done, total, current ->
                     postUi {
+                        setHeroValue(getString(R.string.number_one_decimal, current), R.string.mbps_unit)
                         statusValue.text = getString(
                             R.string.upload_progress,
                             done / 1_000_000,
@@ -123,8 +151,11 @@ class MainActivity : Activity() {
                 }
                 postUi {
                     uploadValue.text = getString(R.string.speed_format, upload)
+                    heroLabel.text = getString(R.string.download_label)
+                    setHeroValue(getString(R.string.number_one_decimal, download), R.string.mbps_unit)
                     progress.progress = 100
                     statusValue.text = getString(R.string.test_complete)
+                    statusValue.setTextColor(getColor(R.color.success))
                     saveHistory(TestHistoryEntry(System.currentTimeMillis(), network, ping, download, upload))
                     setTesting(false)
                 }
@@ -137,6 +168,7 @@ class MainActivity : Activity() {
                 }
                 postUi {
                     statusValue.text = getString(R.string.test_failed, stage, detail)
+                    statusValue.setTextColor(getColor(R.color.error))
                     setTesting(false)
                 }
             }
@@ -146,14 +178,21 @@ class MainActivity : Activity() {
     private fun postStatus(status: String, progressValue: Int) {
         postUi {
             statusValue.text = status
+            statusValue.setTextColor(getColor(R.color.text_secondary))
             progress.progress = progressValue
         }
     }
 
     private fun setTesting(testing: Boolean) {
+        speedWave.setRunning(testing)
         startButton.isEnabled = !testing
         startButton.text = getString(if (testing) R.string.testing else R.string.test_again)
         progress.visibility = if (testing) View.VISIBLE else View.INVISIBLE
+    }
+
+    private fun setHeroValue(value: String, unit: Int) {
+        heroValue.text = value
+        heroUnit.setText(unit)
     }
 
     private fun updateNetworkType() {
@@ -175,19 +214,21 @@ class MainActivity : Activity() {
 
     private fun renderHistory(entries: List<TestHistoryEntry>) {
         val dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
-        historyValue.text = if (entries.isEmpty()) {
-            getString(R.string.history_empty)
-        } else {
-            entries.joinToString("\n\n") { entry ->
-                getString(
-                    R.string.history_entry,
-                    dateFormat.format(Date(entry.timestampMillis)),
-                    entry.network,
-                    entry.pingMs,
-                    entry.downloadMbps,
-                    entry.uploadMbps,
-                )
-            }
+        historyEmpty.visibility = if (entries.isEmpty()) View.VISIBLE else View.GONE
+        historyContainer.removeAllViews()
+        entries.forEach { entry ->
+            val row = layoutInflater.inflate(R.layout.history_item, historyContainer, false)
+            row.findViewById<TextView>(R.id.history_meta).text = getString(
+                R.string.history_meta,
+                dateFormat.format(Date(entry.timestampMillis)),
+                entry.network,
+            )
+            row.findViewById<TextView>(R.id.history_ping).text = getString(R.string.history_ping, entry.pingMs)
+            row.findViewById<TextView>(R.id.history_download).text =
+                getString(R.string.history_download, entry.downloadMbps)
+            row.findViewById<TextView>(R.id.history_upload).text =
+                getString(R.string.history_upload, entry.uploadMbps)
+            historyContainer.addView(row)
         }
     }
 

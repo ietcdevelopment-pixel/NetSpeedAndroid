@@ -28,8 +28,15 @@
     <string name="no_network">No Network</string>
     <string name="ping_format">%.0f ms</string>
     <string name="speed_format">%.1f Mbps</string>
+    <string name="number_no_decimals">%.0f</string>
+    <string name="number_one_decimal">%.1f</string>
+    <string name="ms_unit">ms</string>
+    <string name="mbps_unit">Mbps</string>
     <string name="history_title">Test History</string>
     <string name="history_empty">No completed tests yet</string>
-    <string name="history_entry">%1$s · %2$s\nPing %3$.0f ms · Download %4$.1f Mbps · Upload %5$.1f Mbps</string>
+    <string name="history_meta">%1$s · %2$s</string>
+    <string name="history_ping">Ping\n%1$.0f ms</string>
+    <string name="history_download">Download\n%1$.1f Mbps</string>
+    <string name="history_upload">Upload\n%1$.1f Mbps</string>
     <string name="version_format">Version %1$s</string>
 </resources>

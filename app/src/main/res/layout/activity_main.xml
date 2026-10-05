@@ -10,7 +10,7 @@
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingStart="24dp"
-        android:paddingTop="40dp"
+        android:paddingTop="64dp"
         android:paddingEnd="24dp"
         android:paddingBottom="32dp">
 
@@ -173,5 +173,13 @@
             android:textColor="@android:color/white"
             android:textSize="15sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/version_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
     </LinearLayout>
 </ScrollView>

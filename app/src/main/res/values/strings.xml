@@ -28,4 +28,5 @@
     <string name="no_network">No Network</string>
     <string name="ping_format">%.0f ms</string>
     <string name="speed_format">%.1f Mbps</string>
+    <string name="version_format">Version %1$s</string>
 </resources>

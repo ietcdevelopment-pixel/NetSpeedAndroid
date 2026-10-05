@@ -7,11 +7,9 @@ import javax.net.ssl.HttpsURLConnection
 internal class SpeedTestClient {
     fun measurePingMs(samples: Int = PING_SAMPLES): Double {
         val timings = ArrayList<Double>(samples)
-        repeat(samples) { sample ->
+        repeat(samples) {
             checkNotInterrupted()
-            val (connection, started) = openSuccessfulGet(
-                "/__down?bytes=0&ping=$sample-${System.nanoTime()}",
-            )
+            val (connection, started) = openSuccessfulGet("/__down?bytes=0")
             try {
                 val headersReceived = System.nanoTime()
                 connection.inputStream.use { input ->
@@ -36,9 +34,7 @@ internal class SpeedTestClient {
         var lastProgressAt = 0L
 
         DOWNLOAD_STAGES.forEachIndexed { index, bytes ->
-            val (connection, started) = openSuccessfulGet(
-                "/__down?bytes=$bytes&download=$index-${System.nanoTime()}",
-            )
+            val (connection, started) = openSuccessfulGet("/__down?bytes=$bytes")
             try {
                 val serverTime = cloudflareServerTimeMs(serverTimingHeader(connection))
                 var received = 0L
@@ -217,6 +213,6 @@ internal class SpeedTestClient {
         private const val MAX_ATTEMPTS = 3
         private const val DEFAULT_RETRY_DELAY_MS = 1_000L
         private const val MAX_RETRY_DELAY_MS = 5_000L
-        private val RETRYABLE_CODES = setOf(429, 502, 503, 504)
+        private val RETRYABLE_CODES = setOf(403, 429, 502, 503, 504)
     }
 }

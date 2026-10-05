@@ -22,6 +22,7 @@ class MainActivity : Activity() {
     private lateinit var statusValue: TextView
     private lateinit var progress: ProgressBar
     private lateinit var startButton: Button
+    private lateinit var versionValue: TextView
 
     private val executor: ExecutorService = Executors.newSingleThreadExecutor()
     private var activeTest: Future<*>? = null
@@ -38,6 +39,11 @@ class MainActivity : Activity() {
         statusValue = findViewById(R.id.status_value)
         progress = findViewById(R.id.progress)
         startButton = findViewById(R.id.start_button)
+        versionValue = findViewById(R.id.version_value)
+        versionValue.text = getString(
+            R.string.version_format,
+            packageManager.getPackageInfo(packageName, 0).versionName,
+        )
 
         startButton.setOnClickListener { startSpeedTest() }
         updateNetworkType()
